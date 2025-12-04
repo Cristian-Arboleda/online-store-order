@@ -1,59 +1,66 @@
 import polars as pl
-from dash import html, dcc, callback, Input, Output, State, ctx, no_update
+from dash import html, dcc, callback, Input, Output, State, ctx, no_update, ALL
+from data import *
 
-database = pl.read_excel('Online-Store-Orders.xlsx')
-database_json = database.to_dicts()
-
-list_years = database['Date'].dt.year().unique().sort()
-
-filter_column = ['Date', 'PaymentMethod', 'OrderStatus', 'CouponCode', 'ReferralSource']
-
-unique_filters = {
-    column : database[column].unique()
-    if column !=  "Date" else
-    database[column].dt.year().unique().sort()
-    for column in filter_column
-}
-
-print(unique_filters)
-
-html_filters = html.Div(
+filters_html = html.Div(
     id='filters_container',
     className='element_container',
     children=[
-        #dcc.Store(id='database', data=database_json),
-        
         html.Div(
-            className='filters_element_container',
             children=[
-                html.Button(
-                    children=unique_value
-                    #children=f'{unique_filters[column]}'
+                html.P(
+                    column,
+                    style={'text-align': 'center'}
+                ),
+                html.Div(
+                    className='filters_element_container',
+                    children=[
+                        html.Button(
+                            children=value,
+                            className='filters_element_btn',
+                            id={
+                                "type": "filter_btn",
+                                "column": column,
+                                "value": value
+                            }
+                        )
+                        for value in unique_filters[column]
+                    ]
                 )
-                for unique_value in unique_filters[column]
             ]
         )
         for column in unique_filters
     ]
 )
 
-"""@callback(
-    Output('database', 'data'),
-    [
-        Input(f'{year}_btn', 'n_clicks')
-        for year in list_years
-    ],
-    Input('database', 'data')
+@callback(
+    Output('filters_activated', 'data'),
+    Input('filters_activated', 'data'),
+    Input({"type": "filter_btn", "column" : ALL, "value": ALL}, 'n_clicks')
 )
-def years_update(*args):
+
+def update(*args):
     
-    # Obtener el boton del year seleccionado
+    # Obtener el disparador de la funcion
     triggered = ctx.triggered_id
     
+    # Si no se ha disparado la funcion
     if not triggered:
         return no_update
     
-    year = triggered.replace('_btn', '')
+    column = triggered['column']
+    value = triggered['value']
     
-    data = data
-    return no_update"""
+    # Obtener la lista de los filtros activados
+    filters_activated = ctx.inputs["filters_activated.data"]
+    
+    
+    # Si el valor se encuentra en la columna significa que esta activado el filtro
+    if value in filters_activated[column] :
+        filters_activated[column].remove(value)
+        print('Se ha desactivado el filtro: ', value)
+    else:
+        print('Se ha activado el filtro:', value)
+        filters_activated[column].append(value)
+    
+    return filters_activated

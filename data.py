@@ -1,17 +1,15 @@
 import polars as pl
 
-data = pl.read_excel('Online-Store-Orders.xlsx')
+database = pl.read_excel('Online-Store-Orders.xlsx').fill_null('null')
 
 # ------------------------------------------------------------------------------------------------------------------
 # Unique values
-years = data.select(
-    pl.col('Date').dt.year().unique().sort()
-)
 
-products = data['Product'].unique()
+filter_column = ['Date', 'PaymentMethod', 'OrderStatus', 'CouponCode', 'ReferralSource']
 
-Paymentmethod = data['PaymentMethod'].unique()
-
-orderstatus = data['OrderStatus'].unique()
-
-referralsource = data['ReferralSource'].unique()
+unique_filters = {
+    column : database[column].unique().to_list()
+    if column !=  "Date" else
+    database[column].dt.year().unique().sort().to_list()
+    for column in filter_column
+}
