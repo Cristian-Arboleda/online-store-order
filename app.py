@@ -5,6 +5,7 @@ from theme import theme_html
 from graph import graphs
 
 app = Dash()
+server = app.server
 
 app.layout = html.Div(
     id='container_main',
