@@ -28,11 +28,12 @@
     color: inherit;
     border: 1px solid gray;
     border-radius: 2px;
+}
+.filters_element_btn_activated{
     background: rgb(183, 111, 3);
     color: white
 }
-
-.filters_element_btn:active{
+.filters_element_btn_deactivated{
     background: none;
     color: inherit;
 }

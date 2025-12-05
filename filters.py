@@ -17,7 +17,7 @@ filters_html = html.Div(
                     children=[
                         html.Button(
                             children=value,
-                            className='filters_element_btn',
+                            className='filters_element_btn filters_element_btn_activated',
                             id={
                                 "type": "filter_btn",
                                 "column": column,
@@ -35,16 +35,17 @@ filters_html = html.Div(
 
 @callback(
     Output('filters_activated', 'data'),
+    Output({"type": "filter_btn", "column": ALL, "value": ALL}, "className"),
     Input('filters_activated', 'data'),
     Input({"type": "filter_btn", "column" : ALL, "value": ALL}, 'n_clicks')
 )
 
 def update(*args):
     
-    # Obtener el disparador de la funcion
+    # Obtener el boton del filtro presionado
     triggered = ctx.triggered_id
     
-    # Si no se ha disparado la funcion
+    # Si no se ha presionado un boton
     if not triggered:
         return no_update
     
@@ -54,7 +55,6 @@ def update(*args):
     # Obtener la lista de los filtros activados
     filters_activated = ctx.inputs["filters_activated.data"]
     
-    
     # Si el valor se encuentra en la columna significa que esta activado el filtro
     if value in filters_activated[column] :
         filters_activated[column].remove(value)
@@ -63,4 +63,19 @@ def update(*args):
         print('Se ha activado el filtro:', value)
         filters_activated[column].append(value)
     
-    return filters_activated
+    
+    # Clases para los botones presionados
+    
+    class_activated_filters = 'filters_element_btn filters_element_btn_activated'
+    class_deactivated_filters = 'filters_element_btn filters_element_btn_deactivated'
+    
+    class_filters = []
+    
+    for column in unique_filters:
+        for value in unique_filters[column]:
+            if value in filters_activated[column]:
+                class_filters.append(class_activated_filters)
+            else:
+                class_filters.append(class_deactivated_filters)
+    
+    return filters_activated, class_filters

@@ -35,7 +35,6 @@ def update_graphics(filters):
             database_filtered = database_filtered.filter(
                 pl.col(column).is_in(filters[column])
             )
-    print('database_filtered \n', database_filtered)
     
     database_filtered = database_filtered.sort('Date')
     
@@ -43,8 +42,13 @@ def update_graphics(filters):
     
     database_filtered = (
         database_filtered.with_columns(
-            pl.col('Date').dt.strftime("%y%m").alias()
+            pl.col('Date').dt.strftime("%y-%m").alias("Date")
         )
+        .group_by('Date')
+        .agg(
+            pl.col('TotalPrice').sum().alias('TotalPrice')
+        )
+        .sort('Date')
     )
     
     # --------------------------------------------------------------------------------------------------------
