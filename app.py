@@ -19,4 +19,5 @@ app.layout = html.Div(
     ]
 )
 
-app.run(port=8061, debug=True)
+if __name__ == '__main__':
+    app.run(port=8061, debug=True)

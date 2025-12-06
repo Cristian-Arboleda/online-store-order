@@ -19,10 +19,12 @@ graphs = [graph_totalprice]
 @callback(
     Output('graph_totalprice', 'figure'),
     Input('filters_activated', 'data'),
+    prevent_initial_call=False,
 )
 
 def update_graphics(filters):
     
+    print('Grafico')
     # Filtrar la database
     database_filtered = database
     

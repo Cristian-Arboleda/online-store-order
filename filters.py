@@ -17,7 +17,7 @@ filters_html = html.Div(
                     children=[
                         html.Button(
                             children=value,
-                            className='filters_element_btn filters_element_btn_activated',
+                            className='filters_element_btn',
                             id={
                                 "type": "filter_btn",
                                 "column": column,
@@ -42,35 +42,30 @@ filters_html = html.Div(
 
 def update(*args):
     
-    # Obtener el boton del filtro presionado
-    triggered = ctx.triggered_id
-    
-    # Si no se ha presionado un boton
-    if not triggered:
-        return no_update
-    
-    column = triggered['column']
-    value = triggered['value']
-    
     # Obtener la lista de los filtros activados
     filters_activated = ctx.inputs["filters_activated.data"]
     
-    # Si el valor se encuentra en la columna significa que esta activado el filtro
-    if value in filters_activated[column] :
-        filters_activated[column].remove(value)
-        print('Se ha desactivado el filtro: ', value)
-    else:
-        print('Se ha activado el filtro:', value)
-        filters_activated[column].append(value)
+    # Obtener el boton del filtro presionado
+    triggered = ctx.triggered_id
     
+    # Si se presiona un boton de filtro
+    if triggered:
+        column = triggered['column']
+        value = triggered['value']
+        
+        # Si el valor se encuentra en la columna significa que esta activado el filtro
+        if value in filters_activated[column] :
+            filters_activated[column].remove(value)
+            print('Se ha desactivado el filtro: ', value)
+        else:
+            print('Se ha activado el filtro:', value)
+            filters_activated[column].append(value)
     
     # Clases para los botones presionados
-    
     class_activated_filters = 'filters_element_btn filters_element_btn_activated'
     class_deactivated_filters = 'filters_element_btn filters_element_btn_deactivated'
     
     class_filters = []
-    
     for column in unique_filters:
         for value in unique_filters[column]:
             if value in filters_activated[column]:
